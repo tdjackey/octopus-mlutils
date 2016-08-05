@@ -18,11 +18,15 @@ class KNN():
     def setK(self, k):
         self.k = k
 
+    def setKNNDistance(self, knnDist):
+        self.knnDist = knnDist
+
     def setSVDk(self, k):
         self.svdK = k
 
     def setNoCache(self, no_cache):
         self.no_cache = no_cache
+
 
     def initialize(self):
 
@@ -59,26 +63,13 @@ class KNN():
         else:
             dataPointIndex = self.emb.rTOC[funcId]
             X = self.emb.x
-            D = 1.0 - (X * self.emb.x[dataPointIndex, :].T).todense()
-            NNI = list(D[:,0].argsort(axis=0))[:self.k]
-            # calc euclidean distance
-            D_euclidean = self.calculateDistancesEuclidean()[:, dataPointIndex]
-            NNI_euclidean = list(D_euclidean.argsort(axis=0))[:self.k]
-
-            #return  [self.emb.TOC[x] for x in NNI_euclidean] 
+            #D = 1.0 - (X * self.emb.x[dataPointIndex, :].T).todense()
+            #NNI = list(D[:,0].argsort(axis=0))[:self.k]
+            D =  self.calculateDistances()[:, dataPointIndex]
+            NNI = list(D.argsort(axis=0))[:self.k]
             return [self.emb.TOC[x] for x in NNI]
 
-    def calculateDistancesEuclidean(self):
-        print("euclidean hello")
-        self.emb.D = pairwise_distances(self.emb.x, metric='euclidean')
-        self.emb.NNI = self.emb.D.argsort(axis=0)
-        return self.emb.D
 
-    def calculateDistancesEuclidean(self):
-        print("euclidean hello")
-        self.emb.D = pairwise_distances(self.emb.x, metric='euclidean')
-        self.emb.NNI = self.emb.D.argsort(axis=0)
-        return self.emb.D
     def calculateDistances(self):
 
         self.emb.D = self._calculateDistanceMatrix()
@@ -88,4 +79,7 @@ class KNN():
         self.emb.NNI = self.emb.D.argsort(axis=0)
 
     def _calculateDistanceMatrix(self):
-        return pairwise_distances(self.emb.x, metric='cosine')
+        if self.knnDist:
+            return pairwise_distances(self.emb.x, metric=self.knnDist)
+        else:
+            return pairwise_distances(self.emb.x, metric='cosine')
