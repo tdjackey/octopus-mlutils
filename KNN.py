@@ -65,8 +65,9 @@ class KNN():
             D_euclidean = self.calculateDistancesEuclidean()[:, dataPointIndex]
             NNI_euclidean = list(D_euclidean.argsort(axis=0))[:self.k]
 
+            #return  [self.emb.TOC[x] for x in NNI_euclidean] 
             return [self.emb.TOC[x] for x in NNI]
-            
+
     def calculateDistancesEuclidean(self):
         print("euclidean hello")
         self.emb.D = pairwise_distances(self.emb.x, metric='euclidean')
